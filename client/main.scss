@@ -1,3 +1,26 @@
+@import url("https://fonts.googleapis.com/css?family=Libre+Franklin:100,200,300,400,700");
+
+$default-font-family: arial, 'Libre Franklin', sans-serif;
+$default-font-weight: 300;
+
+body {
+  font-family: $default-font-family;
+  font-weight: $default-font-weight;
+}
+
+input {
+  font-family: $default-font-family;
+  font-weight: $default-font-weight;
+}
+
+button {
+  font-family: $default-font-family;
+  font-weight: $default-font-weight;
+}
+
+.new-ex-name {
+  font-size: 1.17em;
+}
 
 .new-form-response-input {
   border: 0;
@@ -7,7 +30,7 @@
 }
 
 .new-form-answer-input {
-  margin: 0px 0px 1px 0px;
+  margin: 0px 4px 1px 0px;
 }
 
 .new-form-responses {

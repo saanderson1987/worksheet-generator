@@ -7,47 +7,30 @@ var AutosizeInput = require('react-input-autosize');
 class NewExForm extends React.Component {
   constructor(props) {
     super(props);
-    this.handleInput = this.handleInput.bind(this);
     this.handleQuestionInput = this.handleQuestionInput.bind(this);
     this.handleResponseInput = this.handleResponseInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.addBlank = this.addBlank.bind(this);
     this.state = {
-      exName: '',
       problems: [
         {
           question: '',
-          response: [
-            {
-              text: '',
-              blank: false
-            }
-          ],
+          response: [''],
+          answers: []
         }
-      ],
-      submitStatus: '',
+      ]
     };
   }
 
   render() {
     return (
       <div>
-        <h3>New Exercise Form</h3>
-        <h3>
-          <input
-            className='new-ex-name'
-            placeholder='Exercise name   '
-            name='exName'
-            value={ this.state.exName }
-            onChange={ this.handleInput()}
-          />
-        </h3>
+        <h1>New Exercise Form</h1>
         <form onSubmit={ this.handleSubmit }>
           { this.renderProblems() }
           { JSON.stringify(this.state) }
           <input type="submit" value="Submit" />
         </form>
-        { this.state.submitStatus }
       </div>
     );
   }
@@ -55,13 +38,14 @@ class NewExForm extends React.Component {
   renderProblems() {
     return this.state.problems.map( (problem, idx) => {
       return(
-        <div key={ idx }>
-          { idx + 1 }.{' '}
+        <div key={idx}>
+          Question:
           <input
-            placeholder='Question'
+            name={ [idx] }
             value={ this.state.problems[idx].question }
             onChange={ this.handleQuestionInput(idx) }
           />
+          Response:
           <div>
             <div className='new-form-responses'>
               {this.renderResponse(idx)}
@@ -72,32 +56,35 @@ class NewExForm extends React.Component {
     });
   }
 
-
   renderResponse(problemIdx) {
     let problem = this.state.problems[problemIdx];
+    let respBlankCount = -1;
     return problem.response.map( (part, idx) => {
-      if (part.blank) {
+      if (part === '[BLANK]') {
+        respBlankCount ++;
         return (
           <AutosizeInput
             placeholder="Answer blank"
             inputClassName='new-form-answer-input'
             key={ idx }
-            value={ problem.response[idx].text }
-            onChange={ this.handleResponseInput(problemIdx, idx) }
+            name={ respBlankCount }
+            value={ problem.answers[respBlankCount] }
+            onChange={ this.handleResponseInput('answers', problemIdx) }
           />
         );
       } else {
-        const placeholder = idx === 0 ? 'Response' : '';
+        const placeholder = idx === 0 ? 'Type response here' : '';
         const minWidth = idx === 0 ? '' : '10';
         return (
-          <div key={ idx }>
-            <button className='add-blank' onClick={ this.addBlank(problemIdx, idx - 1) }>+</button>
+          <div>
             <AutosizeInput
               placeholder={ placeholder }
               minWidth={ minWidth }
               inputClassName='new-form-response-input'
-              value={ problem.response[idx].text }
-              onChange={ this.handleResponseInput(problemIdx, idx) }
+              key={ idx }
+              name={ idx }
+              value={ problem.response[idx] }
+              onChange={ this.handleResponseInput('response', problemIdx) }
               />
             <button className='add-blank' onClick={ this.addBlank(problemIdx, idx) }>+</button>
           </div>
@@ -110,20 +97,13 @@ class NewExForm extends React.Component {
     return (event) => {
       event.preventDefault();
       const problems = Object.assign([], this.state.problems);
-      problems[problemIdx].response.splice([respIdx + 1], 0,
-        {
-          text: '',
-          blank: true
-        });
-      this.setState({ problems });
-    };
-  }
+      problems[problemIdx].answers.push('');
+      // problems[problemIdx].response.push('[BLANK]', '');
 
-  handleInput() {
-    return (event) => {
-      const name = event.target.name;
-      const value = event.target.value;
-      this.setState({ [name]: value });
+      problems[problemIdx].response.splice(respIdx + 1, 0, '');
+      problems[problemIdx].response.splice(respIdx + 1, 0, '[BLANK]');
+
+      this.setState({ problems });
     };
   }
 
@@ -136,23 +116,21 @@ class NewExForm extends React.Component {
       };
   }
 
-  handleResponseInput(problemIdx, respIdx) {
+  handleResponseInput(valType, problemIdx) {
     return (event) => {
+      const idx = event.target.name;
       const value = event.target.value;
       const problems = Object.assign([], this.state.problems);
-      problems[problemIdx].response[respIdx].text = value;
+      problems[problemIdx][valType][idx] = value;
       this.setState({ problems });
     };
   }
 
   handleSubmit(event) {
     event.preventDefault();
-    const { exName, problems } = this.state;
-    debugger;
-    Meteor.call('exercises.insert', {exName, problems}, (err, res) => {
-      const submitStatus = err ? 'Error, check console log' : 'SUCCESS!';
-      console.log(err);
-      this.setState({ submitStatus });
+    this.state.problems.forEach( (problem) => {
+      const { question, response, answers } = problem;
+      Meteor.call('problems.insert', question, response, answers);
     });
   }
 
