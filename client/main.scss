@@ -3,13 +3,27 @@
   border: 0;
   outline: 0;
   background: transparent;
-  border-bottom: 1px solid gray;
   padding-bottom: 2px;
-  margin: 2px;
-  // width: 100%;
+}
+
+.new-form-answer-input {
+  margin: 0px 0px 1px 0px;
 }
 
 .new-form-responses {
-  display: flex;
-  min-width: 10px;
+  display: inline-flex;
+  margin: 10px;
+  border-bottom: 1px solid gray;
+  align-items: flex-end;
+}
+
+.add-blank {
+  border-radius: 50%;
+  border-width: 1px;
+  padding: 0px 4px;
+  margin-right: 6px;
+}
+
+.add-blank:hover {
+  cursor: pointer;
 }

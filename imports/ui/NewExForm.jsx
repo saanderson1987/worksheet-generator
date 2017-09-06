@@ -1,6 +1,8 @@
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
+var AutosizeInput = require('react-input-autosize');
+
 
 class NewExForm extends React.Component {
   constructor(props) {
@@ -44,10 +46,11 @@ class NewExForm extends React.Component {
             onChange={ this.handleQuestionInput(idx) }
           />
           Response:
-          <div className='new-form-responses'>
-            {this.renderResponse(idx)}
+          <div>
+            <div className='new-form-responses'>
+              {this.renderResponse(idx)}
+            </div>
           </div>
-          <button onClick={ this.addBlank(idx) }>Add Blank</button>
         </div>
       );
     });
@@ -60,7 +63,9 @@ class NewExForm extends React.Component {
       if (part === '[BLANK]') {
         respBlankCount ++;
         return (
-          <input
+          <AutosizeInput
+            placeholder="Answer blank"
+            inputClassName='new-form-answer-input'
             key={ idx }
             name={ respBlankCount }
             value={ problem.answers[respBlankCount] }
@@ -68,26 +73,36 @@ class NewExForm extends React.Component {
           />
         );
       } else {
+        const placeholder = idx === 0 ? 'Type response here' : '';
+        const minWidth = idx === 0 ? '' : '10';
         return (
-          <input
-            className='new-form-response-input'
-            key={ idx }
-            name={ idx }
-            value={ problem.response[idx] }
-            onChange={ this.handleResponseInput('response', problemIdx) }
-          />
+          <div>
+            <AutosizeInput
+              placeholder={ placeholder }
+              minWidth={ minWidth }
+              inputClassName='new-form-response-input'
+              key={ idx }
+              name={ idx }
+              value={ problem.response[idx] }
+              onChange={ this.handleResponseInput('response', problemIdx) }
+              />
+            <button className='add-blank' onClick={ this.addBlank(problemIdx, idx) }>+</button>
+          </div>
         );
       }
     });
   }
 
-  addBlank(problemIdx) {
+  addBlank(problemIdx, respIdx) {
     return (event) => {
       event.preventDefault();
       const problems = Object.assign([], this.state.problems);
-
       problems[problemIdx].answers.push('');
-      problems[problemIdx].response.push('[BLANK]', '');
+      // problems[problemIdx].response.push('[BLANK]', '');
+
+      problems[problemIdx].response.splice(respIdx, 0, '');
+      problems[problemIdx].response.splice(respIdx, 0, '[BLANK]');
+
       this.setState({ problems });
     };
   }
