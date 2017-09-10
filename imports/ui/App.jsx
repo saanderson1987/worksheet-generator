@@ -12,7 +12,7 @@ class App extends Component {
     super(props);
     this.selectEx = this.selectEx.bind(this);
     this.state = {
-      selectedEx: 'RbpRF6j4BQ4PGwzpv'
+      selectedEx: ''
     };
   }
 
@@ -26,6 +26,7 @@ class App extends Component {
   render() {
     return (
       <div>
+        <AccountsUIWrapper />
         <ExerciseList selectEx={ this.selectEx }/>
         <ExerciseForm id={ this.state.selectedEx } />
         <NewExForm />
