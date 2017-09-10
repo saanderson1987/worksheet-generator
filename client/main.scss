@@ -40,13 +40,20 @@ button {
   align-items: flex-end;
 }
 
-.add-blank {
+.modify-blank {
   border-radius: 50%;
   border-width: 1px;
   padding: 0px 4px;
   margin-right: 6px;
 }
 
-.add-blank:hover {
+.modify-blank:hover {
   cursor: pointer;
+}
+
+.remove-blank {
+  padding: 0px 6px;
+  font-weight: bold;
+  background-color: red;
+  color: white;
 }

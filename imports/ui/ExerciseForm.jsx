@@ -1,42 +1,36 @@
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
-import { Problems } from '../api/problems.js';
+import { Exercises } from '../api/exercises.js';
+import {cloneDeep} from 'lodash';
+
 
 class ExerciseForm extends React.Component {
   constructor(props) {
     super(props);
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.renderResponse = this.renderResponse.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
-    let blanks = this.genBlanks(nextProps);
-    this.setState({ blanks });
-  }
-
-  genBlanks(props) {
-    let blanks = {};
-    props.problems.forEach( (problem, idx) => {
-      problem.answers.forEach( answer => {
-        if (blanks[idx]) {
-          blanks[idx].push('');
-        } else {
-          blanks[idx] = [''];
-        }
-      });
-    });
-    return blanks;
+      if (nextProps.problems.length > 0) {
+      this.setState( {problems: nextProps.problems});
+    }
   }
 
   render() {
+    if (this.props.problems.length < 1) {
+      return(<div>Loading..</div>);
+    }
     return (
       <div>
-        <h1>Exercise Form</h1>
+        <h3>Exercise Form</h3>
+        <h1>{ this.props.exName }</h1>
         <form onSubmit={ this.handleSubmit }>
-          {this.renderProblems()}
+          { this.renderProblems() }
+          this.state:
           {JSON.stringify(this.state)}
-          {JSON.stringify(this.props.problems)}
+          <br />this.props:
+          {JSON.stringify(this.props)}
         </form>
       </div>
     );
@@ -50,7 +44,7 @@ class ExerciseForm extends React.Component {
   }
 
   renderProblems() {
-    return this.props.problems.map( (problem, idx) => {
+    return this.state.problems.map( (problem, idx) => {
       return (
         <div key={idx}>
           <div>{idx+1}. { problem.question }</div>
@@ -62,41 +56,50 @@ class ExerciseForm extends React.Component {
   }
 
   renderResponse(problemIdx) {
-    let problem = this.props.problems[problemIdx];
-    let respBlankCount = -1;
+    let problem = this.state.problems[problemIdx];
     return problem.response.map( (part, idx) => {
-      if (part === '[BLANK]') {
-        respBlankCount ++;
+      if (part.blank) {
         return (
           <input
             key={ idx }
-            name={ [problemIdx, respBlankCount] }
-            value={ this.state.blanks[problemIdx][respBlankCount] }
-            onChange={ this.handleInputChange }
+            value={ problem.response[idx].text }
+            onChange={ this.handleInputChange(problemIdx, idx) }
           />
         );
       } else {
-        return <div key={ idx }>{ part }</div>;
+        return <div key={ idx }>{ part.text }</div>;
       }
     });
   }
 
-  handleInputChange(event) {
-    const name = event.target.name.split(',');
-    const problemIdx = name[0];
-    const respBlankCount = name[1];
-    const value = event.target.value;
-    let blanks = Object.assign({}, this.state.blanks);
-    blanks[problemIdx][respBlankCount] = value;
-    this.setState({ blanks });
+  handleInputChange(problemIdx, respIdx) {
+    return (event) => {
+      const value = event.target.value;
+      const problems = cloneDeep(this.state.problems);
+      problems[problemIdx].response[respIdx].text = value;
+      this.setState({ problems });
+    };
   }
-
 }
 
-export default createContainer(() => {
-  Meteor.subscribe('problems');
+const genBlanks = (problems) => {
+  let probsWithBlanks = cloneDeep(problems);
+  problems.forEach( (problem, problemIdx) => {
+    problem.response.forEach( (part, idx) => {
+      if (part.blank) {
+        probsWithBlanks[problemIdx].response[idx].text = '';
+      }
+    });
+  });
+  return probsWithBlanks;
+};
 
-  return {
-    problems: Problems.find({}).fetch(),
+export default createContainer(({ id }) => {
+  Meteor.subscribe('exercises');
+  const exercise = Exercises.findOne(id);
+  const props = {
+    problems: exercise ? genBlanks(exercise.problems) : [],
+    exName: exercise ? exercise.exName : ''
   };
+  return props;
 }, ExerciseForm);

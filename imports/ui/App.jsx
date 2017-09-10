@@ -5,17 +5,29 @@ import AccountsUIWrapper from './AccountsUIWrapper.jsx';
 
 import ExerciseForm from './ExerciseForm.jsx';
 import NewExForm from './NewExForm.jsx';
+import ExerciseList from './ExerciseList.jsx';
 
 class App extends Component {
   constructor(props) {
     super(props);
+    this.selectEx = this.selectEx.bind(this);
+    this.state = {
+      selectedEx: 'RbpRF6j4BQ4PGwzpv'
+    };
   }
 
+  selectEx(selectedEx) {
+    return (event) => {
+      event.preventDefault();
+      this.setState({ selectedEx });
+    };
+  }
 
   render() {
     return (
       <div>
-        <ExerciseForm />
+        <ExerciseList selectEx={ this.selectEx }/>
+        <ExerciseForm id={ this.state.selectedEx } />
         <NewExForm />
       </div>
     );

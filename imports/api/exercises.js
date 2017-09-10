@@ -7,8 +7,12 @@ export const Exercises = new Mongo.Collection('exercises');
 
 if (Meteor.isServer) {
   // This code only runs on the server
-  Meteor.publish('problems', function tasksPublication() {
-    return Exercises.find();
+  Meteor.publish('exercises', function exercisesPublication() {
+    return Exercises.find({});
+  });
+
+  Meteor.publish('exercise', function exercisePublication(exId) {
+    return Exercises.find(exId);
   });
 }
 

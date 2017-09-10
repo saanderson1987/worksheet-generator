@@ -2,7 +2,7 @@ import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 var AutosizeInput = require('react-input-autosize');
-
+import {cloneDeep} from 'lodash';
 
 class NewExForm extends React.Component {
   constructor(props) {
@@ -10,6 +10,7 @@ class NewExForm extends React.Component {
     this.handleInput = this.handleInput.bind(this);
     this.handleQuestionInput = this.handleQuestionInput.bind(this);
     this.handleResponseInput = this.handleResponseInput.bind(this);
+    this.addProblem = this.addProblem.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.addBlank = this.addBlank.bind(this);
     this.state = {
@@ -29,6 +30,7 @@ class NewExForm extends React.Component {
     };
   }
 
+
   render() {
     return (
       <div>
@@ -44,6 +46,7 @@ class NewExForm extends React.Component {
         </h3>
         <form onSubmit={ this.handleSubmit }>
           { this.renderProblems() }
+          <button onClick={ this.addProblem }>Add Problem</button>
           { JSON.stringify(this.state) }
           <input type="submit" value="Submit" />
         </form>
@@ -78,20 +81,26 @@ class NewExForm extends React.Component {
     return problem.response.map( (part, idx) => {
       if (part.blank) {
         return (
-          <AutosizeInput
-            placeholder="Answer blank"
-            inputClassName='new-form-answer-input'
-            key={ idx }
-            value={ problem.response[idx].text }
-            onChange={ this.handleResponseInput(problemIdx, idx) }
-          />
+          <div key={ idx }>
+            <AutosizeInput
+              placeholder="Answer blank"
+              inputClassName='new-form-answer-input'
+              value={ problem.response[idx].text }
+              onChange={ this.handleResponseInput(problemIdx, idx) }
+            />
+          <button className='modify-blank remove-blank' onClick={ this.removeBlank(problemIdx, idx) }>-</button>
+          </div>
+
         );
       } else {
-        const placeholder = idx === 0 ? 'Response' : '';
+        const placeholder = idx === 0 ? 'Response' : '...continue respone';
         const minWidth = idx === 0 ? '' : '10';
+        const addPreBlankButton = idx === 0 ?
+          <button className='modify-blank' onClick={ this.addBlank(problemIdx, idx - 1, 'pre') }>+</button>
+          : '';
         return (
           <div key={ idx }>
-            <button className='add-blank' onClick={ this.addBlank(problemIdx, idx - 1) }>+</button>
+            { addPreBlankButton }
             <AutosizeInput
               placeholder={ placeholder }
               minWidth={ minWidth }
@@ -99,24 +108,63 @@ class NewExForm extends React.Component {
               value={ problem.response[idx].text }
               onChange={ this.handleResponseInput(problemIdx, idx) }
               />
-            <button className='add-blank' onClick={ this.addBlank(problemIdx, idx) }>+</button>
+            <button className='modify-blank' onClick={ this.addBlank(problemIdx, idx, 'post') }>+</button>
           </div>
         );
       }
     });
   }
 
-  addBlank(problemIdx, respIdx) {
+  removeBlank(problemIdx, respIdx) {
     return (event) => {
       event.preventDefault();
-      const problems = Object.assign([], this.state.problems);
+      const problems = cloneDeep(this.state.problems);
+      const response = problems[problemIdx].response;
+      response.splice(respIdx, 1);
+      if (respIdx > 0) {
+        // Combine the response text that followed the blank with the text
+        // that came before the blank:
+        response[respIdx -1].text += ' ' + response.splice(respIdx, 1)[0].text;
+      }
+      this.setState({ problems });
+    };
+  }
+
+  addBlank(problemIdx, respIdx, pos) {
+    return (event) => {
+      event.preventDefault();
+      const problems = cloneDeep(this.state.problems);
+      if (pos === 'post') {
+        problems[problemIdx].response.splice([respIdx + 1], 0,
+          {
+            text: '',
+            blank: false
+          });
+      }
       problems[problemIdx].response.splice([respIdx + 1], 0,
         {
           text: '',
           blank: true
         });
+
       this.setState({ problems });
     };
+  }
+
+  addProblem(event) {
+    event.preventDefault();
+    const problem = {
+      question: '',
+      response: [
+        {
+          text: '',
+          blank: false
+        }
+      ],
+    };
+    const problems = cloneDeep(this.state.problems);
+    problems.push(problem);
+    this.setState({ problems });
   }
 
   handleInput() {
@@ -130,7 +178,8 @@ class NewExForm extends React.Component {
   handleQuestionInput(problemIdx) {
     return (event) => {
         const value = event.target.value;
-        const problems = Object.assign([], this.state.problems);
+        // const problems = Object.assign([], this.state.problems);
+        const problems = cloneDeep(this.state.problems);
         problems[problemIdx].question = value;
         this.setState( { problems });
       };
@@ -139,7 +188,8 @@ class NewExForm extends React.Component {
   handleResponseInput(problemIdx, respIdx) {
     return (event) => {
       const value = event.target.value;
-      const problems = Object.assign([], this.state.problems);
+      // const problems = Object.assign([], this.state.problems);
+      const problems = cloneDeep(this.state.problems);
       problems[problemIdx].response[respIdx].text = value;
       this.setState({ problems });
     };
@@ -148,14 +198,13 @@ class NewExForm extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     const { exName, problems } = this.state;
-    debugger;
-    Meteor.call('exercises.insert', {exName, problems}, (err, res) => {
-      const submitStatus = err ? 'Error, check console log' : 'SUCCESS!';
-      console.log(err);
-      this.setState({ submitStatus });
-    });
+    Meteor.call('exercises.insert', {exName, problems},
+      (err, res) => {
+        const submitStatus = err ? 'Error, check console log' : 'SUCCESS!';
+        console.log(err);
+        this.setState({ submitStatus });
+      });
   }
-
 }
 
 export default NewExForm;
