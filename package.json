@@ -13,6 +13,7 @@
     "react-addons-pure-render-mixin": "^15.6.0",
     "react-dom": "^15.6.1",
     "react-input-autosize": "^1.1.4",
+    "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2"
   }
 }

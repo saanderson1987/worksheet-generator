@@ -4,8 +4,8 @@
   -documents(exercises, worksheets, tests)
     -user-owner
     -users able to view it
-    -type: 
--create user auth
+    -type:
+-create user auth: http://www.mrscottmcallister.com/custom-authentication-in-meteor/
 -create routes
   -/login login page
   -/signup signup page
