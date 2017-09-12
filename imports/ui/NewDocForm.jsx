@@ -4,7 +4,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 var AutosizeInput = require('react-input-autosize');
 import {cloneDeep} from 'lodash';
 
-class NewExForm extends React.Component {
+class NewDocForm extends React.Component {
   constructor(props) {
     super(props);
     this.handleInput = this.handleInput.bind(this);
@@ -14,7 +14,7 @@ class NewExForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.addBlank = this.addBlank.bind(this);
     this.state = {
-      exName: '',
+      docName: '',
       problems: [
         {
           question: '',
@@ -34,13 +34,13 @@ class NewExForm extends React.Component {
   render() {
     return (
       <div>
-        <h3>New Exercise Form</h3>
+        <h3>New Document Form</h3>
         <h3>
           <input
-            className='new-ex-name'
-            placeholder='Exercise name   '
-            name='exName'
-            value={ this.state.exName }
+            className='new-doc-name'
+            placeholder='Document name   '
+            name='docName'
+            value={ this.state.docName }
             onChange={ this.handleInput()}
           />
         </h3>
@@ -178,7 +178,6 @@ class NewExForm extends React.Component {
   handleQuestionInput(problemIdx) {
     return (event) => {
         const value = event.target.value;
-        // const problems = Object.assign([], this.state.problems);
         const problems = cloneDeep(this.state.problems);
         problems[problemIdx].question = value;
         this.setState( { problems });
@@ -188,7 +187,6 @@ class NewExForm extends React.Component {
   handleResponseInput(problemIdx, respIdx) {
     return (event) => {
       const value = event.target.value;
-      // const problems = Object.assign([], this.state.problems);
       const problems = cloneDeep(this.state.problems);
       problems[problemIdx].response[respIdx].text = value;
       this.setState({ problems });
@@ -197,8 +195,9 @@ class NewExForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    const { exName, problems } = this.state;
-    Meteor.call('exercises.insert', {exName, problems},
+    const { docName, problems } = this.state;
+    const owner = Meteor.user().id;
+    Meteor.call('documents.insert', {owner, docName, problems},
       (err, res) => {
         const submitStatus = err ? 'Error, check console log' : 'SUCCESS!';
         console.log(err);
@@ -207,4 +206,4 @@ class NewExForm extends React.Component {
   }
 }
 
-export default NewExForm;
+export default NewDocForm;

@@ -19,3 +19,6 @@
 -need to maybe combine the exercise forms into a single component
 -ability to grade the worksheets
 -add different types of documents
+-new doc / edit doc
+  -add permitted users button, list of permitted users
+  -type of doc
