@@ -12,7 +12,8 @@ import DocList from '../../ui/DocList.jsx';
 import NavBar from '../../ui/NavBar.jsx';
 import MainPage from '../../ui/pages/MainPage.jsx'
 import EditDoc from '../../ui/EditDoc.jsx'
-
+import DnDTest from '../../ui/DnDTest/DnDTest.jsx';
+import NewDocForm0 from '../../ui/NewDocForm0.jsx';
 
 const renderRoutes = (routeProps) => {
   return (
@@ -22,8 +23,10 @@ const renderRoutes = (routeProps) => {
         <Public exact path="/login" component={LoginPage}/>
         <Authenticated exact path="/" component={MainPage} {...routeProps} />
         <Authenticated exact path="/documents/new" component={NewDocForm} {...routeProps}  />
+        <Authenticated exact path="/documents/newOld" component={NewDocForm0} {...routeProps}  />
         <Authenticated exact path="/documents/:_id" component={DocForm} {...routeProps} />
         <Authenticated exact path="/documents/:_id/edit" component={EditDoc} {...routeProps} />
+        <Authenticated exact path="/dnd" component={DnDTest} {...routeProps} />
       </Switch>
     </Router>
   );

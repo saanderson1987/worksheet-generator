@@ -3,10 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 var AutosizeInput = require('react-input-autosize');
 import {cloneDeep} from 'lodash';
-import { DragDropContext } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-import Problem from './Problem.jsx';
-
 
 class NewDocForm extends React.Component {
   constructor(props) {
@@ -17,7 +13,6 @@ class NewDocForm extends React.Component {
     this.addProblem = this.addProblem.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.addBlank = this.addBlank.bind(this);
-    this.moveProblem = this.moveProblem.bind(this);
     this.state = {
       docName: '',
       problems: [
@@ -60,31 +55,22 @@ class NewDocForm extends React.Component {
     );
   }
 
-  moveProblem() {
-
-  }
-
   renderProblems() {
     return this.state.problems.map( (problem, idx) => {
       return(
-        <Problem
-          index={idx}
-          moveProblem={this.moveProblem}
-        >
-          <div key={ idx } style={{border: '1px dotted black', padding: '10px'}}>
-            { idx + 1 }.{' '}
-            <input
-              placeholder='Question'
-              value={ this.state.problems[idx].question }
-              onChange={ this.handleQuestionInput(idx) }
-            />
-            <div>
-              <div className='new-form-responses'>
-                {this.renderResponse(idx)}
-              </div>
+        <div key={ idx }>
+          { idx + 1 }.{' '}
+          <input
+            placeholder='Question'
+            value={ this.state.problems[idx].question }
+            onChange={ this.handleQuestionInput(idx) }
+          />
+          <div>
+            <div className='new-form-responses'>
+              {this.renderResponse(idx)}
             </div>
           </div>
-        </Problem>
+        </div>
       );
     });
   }
@@ -220,4 +206,4 @@ class NewDocForm extends React.Component {
   }
 }
 
-export default DragDropContext(HTML5Backend)(NewDocForm);
+export default NewDocForm;
