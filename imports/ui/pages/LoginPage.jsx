@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withHistory, Link } from 'react-router-dom';
 import { createContainer } from 'meteor/react-meteor-data';
+import { Meteor } from 'meteor/meteor';
 
 export default class LoginPage extends Component {
   constructor(props){

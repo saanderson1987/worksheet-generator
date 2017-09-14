@@ -53,3 +53,40 @@ Meteor.startup(() => {
     });
   }
 });
+
+//
+// ({
+//   "owner": "saanderson1987@gmail.com",
+//   "permittedUsers": [],
+//   "type": "fill-in-blank",
+//   "docName" : "WS1",
+//   "problems" : [
+//     {
+//       "question" : "Comment tu t'appelles?",
+//       "response" : [
+//         {
+//           "text" : "Je m'appelle",
+//           "blank" : true
+//         },
+//         {
+//           "text" : "Michel.",
+//           "blank" : false
+//         }
+//       ]
+//     },
+//     {
+//       "question" : "Comment ca va?",
+//       "response" : [
+//         {
+//           "text" : "Ca va",
+//           "blank" : true
+//         },
+//         {
+//           "text" : "bien.",
+//           "blank" : false
+//         }
+//       ]
+//     }
+//   ],
+//   "createdAt" : new Date()
+// })

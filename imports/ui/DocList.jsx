@@ -4,6 +4,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import { Exercises } from '../api/exercises.js';
 import { Documents, UserDocuments } from '../api/documents.js';
 import { Link } from 'react-router-dom';
+import EditDoc from './EditDoc.jsx';
 
 
 
@@ -15,7 +16,12 @@ class DocList extends React.Component {
 
   render() {
     const documents = this.props.documents ? this.props.documents.map( (doc, idx) => {
-      return <li key={ idx }><Link to={`documents/${doc._id}`}>{ doc.docName }</Link></li>;
+      return (
+        <li key={ idx }>
+          <Link to={`documents/${doc._id}`}>{ doc.docName }</Link>
+          <Link to={`documents/${doc._id}/edit`}>    Edit</Link>
+        </li>
+      );
     }) : '';
     const myDocuments = this.props.myDocuments ? this.props.myDocuments.map( (doc, idx) => {
       return <li key={ idx }><a onClick={ this.props.selectDoc(doc._id) }>{ doc.docName }</a></li>;

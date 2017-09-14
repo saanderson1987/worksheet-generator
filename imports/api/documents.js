@@ -54,4 +54,8 @@ Meteor.methods({
     });
   },
 
+  'documents.update'(id, updatedDoc) {
+    Documents.update(id, updatedDoc);
+  }
+
 });

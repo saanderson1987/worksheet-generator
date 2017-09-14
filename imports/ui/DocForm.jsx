@@ -4,15 +4,18 @@ import { createContainer } from 'meteor/react-meteor-data';
 import { Exercises } from '../api/exercises.js';
 import { Documents } from '../api/documents.js';
 import {cloneDeep} from 'lodash';
+import DocResults from './DocResults.jsx';
 
 
 class DocForm extends React.Component {
   constructor(props) {
     super(props);
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
     this.state = {
-      problems: this.props.problems
-    }
+      problems: this.props.problems,
+      graded: false
+    };
   }
 
   componentWillReceiveProps(nextProps) {
@@ -23,7 +26,11 @@ class DocForm extends React.Component {
 
   render() {
     if (this.props.problems.length < 1) {
-      return(<div>Loading..</div>);
+      return(<div>Loading...
+          <br /> this.state:
+          {JSON.stringify(this.state)}
+          <br />this.props:
+          {JSON.stringify(this.props)}</div>);
     }
     return (
       <div>
@@ -31,20 +38,20 @@ class DocForm extends React.Component {
         <h1>{ this.props.docName }</h1>
         <form onSubmit={ this.handleSubmit }>
           { this.renderProblems() }
-          this.state:
-          {JSON.stringify(this.state)}
-          <br />this.props:
-          {JSON.stringify(this.props)}
+          <input type="submit" value="Submit"/>
         </form>
+        { this.state.graded ?
+           <DocResults
+             docId={this.props.match.params._id}
+             submitted={this.state.problems}
+           /> : ''
+        }
+        this.state:
+        {JSON.stringify(this.state)}
+        <br />this.props:
+        {JSON.stringify(this.props)}
       </div>
     );
-  }
-
-  removeProblem(problemId) {
-    return (event) => {
-      event.preventDefault();
-      Meteor.call('problems.remove', problemId);
-    };
   }
 
   renderProblems() {
@@ -53,7 +60,6 @@ class DocForm extends React.Component {
         <div key={idx}>
           <div>{idx+1}. { problem.question }</div>
           <div>{ this.renderResponse(idx) }</div>
-          <button onClick={this.removeProblem(problem._id)}>Delete</button>
         </div>
       );
     });
@@ -84,6 +90,12 @@ class DocForm extends React.Component {
       this.setState({ problems });
     };
   }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    this.setState({graded: true});
+  }
+
 }
 
 const genBlanks = (problems) => {
@@ -100,7 +112,7 @@ const genBlanks = (problems) => {
 
 export default createContainer( ({match}) => {
   Meteor.subscribe('documents');
-  const doc = Documents.findOne(match.params.id);
+  const doc = Documents.findOne(match.params._id);
   const props = {
     problems: doc ? genBlanks(doc.problems) : [],
     docName: doc ? doc.docName : ''

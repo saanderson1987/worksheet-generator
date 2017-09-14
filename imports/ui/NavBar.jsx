@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import { withHistory } from 'react-router-dom';
-import MainPage from '../pages/MainPage.jsx';
+import React from 'react';
+import { Meteor } from 'meteor/meteor';
+import { createContainer } from 'meteor/react-meteor-data';
+import { Link } from 'react-router-dom';
 
-export default class AppContainer extends Component {
-  constructor(props){
+export default class NavBar extends React.Component {
+  constructor(props) {
     super(props);
-    // this.state = this.getMeteorData();
     this.logout = this.logout.bind(this);
   }
 
@@ -22,11 +22,10 @@ export default class AppContainer extends Component {
 
   render(){
     return (
-      <div>
         <nav className="navbar navbar-default navbar-static-top">
           <div className="container">
             <div className="navbar-header">
-              <a className="navbar-brand" href="#">Worksheet Generator</a>
+              <Link className="navbar-brand" to="/">Worksheet Generator</Link>
             </div>
             <div className="navbar-collapse">
               <ul className="nav navbar-nav navbar-right">
@@ -37,8 +36,7 @@ export default class AppContainer extends Component {
             </div>
           </div>
         </nav>
-        <MainPage />
-      </div>
     );
   }
+
 }
