@@ -5,14 +5,9 @@ var AutosizeInput = require('react-input-autosize');
 import {cloneDeep} from 'lodash';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import update from 'react/lib/update';
-import shortid from 'shortid';
-
 import Problem from './Problem.jsx';
-import NewBlank from './NewBlank.jsx';
-import NewProblem from './NewProblem.jsx';
-import Box from './Box.jsx';
-import Response from './Response.jsx';
+import update from 'react/lib/update';
+
 
 class NewDocForm extends React.Component {
   constructor(props) {
@@ -24,9 +19,6 @@ class NewDocForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.addBlank = this.addBlank.bind(this);
     this.moveProblem = this.moveProblem.bind(this);
-    this.addNewProblem = this.addNewProblem.bind(this);
-    this.drop = this.drop.bind(this);
-    this.dropBlank = this.dropBlank.bind(this);
     this.state = {
       docName: '',
       problemCount: 3,
@@ -63,7 +55,6 @@ class NewDocForm extends React.Component {
         },
       ],
       submitStatus: '',
-      boxes: [],
     };
   }
 
@@ -72,81 +63,25 @@ class NewDocForm extends React.Component {
     return (
       <div>
         <h3>New Document Form</h3>
-        <div className='new-doc-container'>
-          <div className='new-doc-form'>
-            <h3>
-              <input
-                className='new-doc-name'
-                placeholder='Document name   '
-                name='docName'
-                value={ this.state.docName }
-                onChange={ this.handleInput()}
-              />
-            </h3>
-            <form onSubmit={ this.handleSubmit }>
-              { this.renderProblems() }
-              <button onClick={ this.addProblem }>Add Problem</button>
-              { JSON.stringify(this.state) }
-              <input type="submit" value="Submit" />
-            </form>
-          </div>
-          <div className='toolbox'>
-            <div>Toolbox</div>
-            <NewBlank drop={this.drop}/>
-            <NewProblem />
-          </div>
-        </div>
+        <h3>
+          <input
+            className='new-doc-name'
+            placeholder='Document name   '
+            name='docName'
+            value={ this.state.docName }
+            onChange={ this.handleInput()}
+          />
+        </h3>
+        <form onSubmit={ this.handleSubmit }>
+          { this.renderProblems() }
+          <button onClick={ this.addProblem }>Add Problem</button>
+          { JSON.stringify(this.state) }
+          <input type="submit" value="Submit" />
+        </form>
         { this.state.submitStatus }
       </div>
     );
   }
-
-  drop(sourceType, targetType) {
-    if (sourceType === 'blank') {
-      const boxes = cloneDeep(this.state.boxes);
-      boxes.push(
-        <input
-          className='new-form-answer-input'
-          disabled
-          placeholder='New blank'
-          key={shortid.generate()}
-        />
-      );
-      this.setState({ boxes });
-    }
-  }
-
-  dropBlank(problemIdx, respIdx) {
-    const problems = cloneDeep(this.state.problems);
-    problems[problemIdx].response.splice(respIdx, 0,
-      {
-        text: '',
-        blank: true
-      });
-    this.setState({ problems });
-  }
-
-  addBlank(problemIdx, respIdx, pos) {
-    return (event) => {
-      event.preventDefault();
-      const problems = cloneDeep(this.state.problems);
-      if (pos === 'post') {
-        problems[problemIdx].response.splice([respIdx + 1], 0,
-          {
-            text: '',
-            blank: false
-          });
-      }
-      problems[problemIdx].response.splice([respIdx + 1], 0,
-        {
-          text: '',
-          blank: true
-        });
-
-      this.setState({ problems });
-    };
-  }
-
 
   moveProblem(dragIndex, hoverIndex) {
     // const problems = cloneDeep(this.state.problems);
@@ -175,7 +110,6 @@ class NewDocForm extends React.Component {
           id={problem.id}
           index={idx}
           moveProblem={this.moveProblem}
-          addNewProblem={this.addNewProblem}
           question={problem.question}
         >
           <div>
@@ -202,14 +136,14 @@ class NewDocForm extends React.Component {
     return problem.response.map( (part, idx) => {
       if (part.blank) {
         return (
-          <div key={ shortid.generate() } >
+          <div key={ idx }>
             <AutosizeInput
               placeholder="Answer blank"
               inputClassName='new-form-answer-input'
               value={ problem.response[idx].text }
               onChange={ this.handleResponseInput(problemIdx, idx) }
             />
-            <button className='modify-blank remove-blank' onClick={ this.removeBlank(problemIdx, idx) }>-</button>
+          <button className='modify-blank remove-blank' onClick={ this.removeBlank(problemIdx, idx) }>-</button>
           </div>
 
         );
@@ -220,20 +154,17 @@ class NewDocForm extends React.Component {
           <button className='modify-blank' onClick={ this.addBlank(problemIdx, idx - 1, 'pre') }>+</button>
           : '';
         return (
-          <Response
-            key={ shortid.generate() }
-            problemIdx={problemIdx}
-            respIdx={idx}
-            dropBlank={this.dropBlank}
-          >
+          <div key={ idx }>
+            { addPreBlankButton }
             <AutosizeInput
               placeholder={ placeholder }
               minWidth={ minWidth }
               inputClassName='new-form-response-input'
               value={ problem.response[idx].text }
               onChange={ this.handleResponseInput(problemIdx, idx) }
-            />
-          </Response>
+              />
+            <button className='modify-blank' onClick={ this.addBlank(problemIdx, idx, 'post') }>+</button>
+          </div>
         );
       }
     });
@@ -273,27 +204,6 @@ class NewDocForm extends React.Component {
 
       this.setState({ problems });
     };
-  }
-
-  addNewProblem(idx) {
-    const problem = {
-      question: '',
-      id: this.state.problemCount + 1,
-      response: [
-        {
-          text: '',
-          blank: false
-        }
-      ],
-    };
-
-    this.setState(update(this.state, {
-      problems: {
-        $splice: [
-          [idx, 0, problem],
-        ],
-      },
-    }));
   }
 
   addProblem(event) {

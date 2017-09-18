@@ -5,6 +5,7 @@ import Box from './Box';
 import { cloneDeep } from 'lodash';
 import { DragDropContext } from 'react-dnd';
 import FreeBoxes from './FreeBoxes';
+import Container from './Container';
 
 class DnDTest extends Component {
   constructor(props) {
@@ -48,6 +49,8 @@ class DnDTest extends Component {
               })
             }
           </FreeBoxes>
+          <br/>
+          <Container />
         </div>
     );
   }

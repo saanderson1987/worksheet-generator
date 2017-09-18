@@ -30,7 +30,7 @@
   -add edit button if it is an owned exercise
   -submit to instructor: prompt "Are you sure?"
   -option to grade without submitting
-  -option to submit to check for completion? 
+  -option to submit to check for completion?
 
 ##FUNCTIONALITY
 -ability to grade the worksheets
@@ -38,7 +38,9 @@
   -if you add a space at the end, it's counted wrong -- fix this
 -add different types of documents
 -smooth transition from doc view to edit, to look like actually just editing the doc view page OR have a preview
-
+-drag and drop in NewDocForm
+  +drag problems to change ordering
+  -need to resolve problem id
 
 ##RE-FACTOR
 -need to maybe combine the exercise forms into a single component

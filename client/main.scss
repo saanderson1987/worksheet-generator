@@ -18,42 +18,4 @@ button {
   font-weight: $default-font-weight;
 }
 
-.new-doc-name {
-  font-size: 1.17em;
-}
-
-.new-form-response-input {
-  border: 0;
-  outline: 0;
-  background: transparent;
-  padding-bottom: 2px;
-}
-
-.new-form-answer-input {
-  margin: 0px 4px 1px 0px;
-}
-
-.new-form-responses {
-  display: inline-flex;
-  margin: 10px;
-  border-bottom: 1px solid gray;
-  align-items: flex-end;
-}
-
-.modify-blank {
-  border-radius: 50%;
-  border-width: 1px;
-  padding: 0px 4px;
-  margin-right: 6px;
-}
-
-.modify-blank:hover {
-  cursor: pointer;
-}
-
-.remove-blank {
-  padding: 0px 6px;
-  font-weight: bold;
-  background-color: red;
-  color: white;
-}
+@import '../imports/style/NewDocForm.scss';
