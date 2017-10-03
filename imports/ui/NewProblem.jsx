@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { findDOMNode } from 'react-dom';
 import { DragSource, DropTarget } from 'react-dnd';
 import ItemTypes from './ItemTypes';
-
+import Problem  from './Problem.jsx';
 
 const newProblemSource = {
   beginDrag(props) {
@@ -19,7 +19,12 @@ class NewProblem extends React.Component {
     const { isDragging, connectDragSource } = this.props;
 
     return connectDragSource(
-      <div></div>
+      <div>
+        <Problem >
+          1. <input disabled placeholder='New Problem' />
+          <div><input disabled placeholder='Response' className='new-form-response-input' /></div>
+        </Problem>
+      </div>
     );
   }
 }

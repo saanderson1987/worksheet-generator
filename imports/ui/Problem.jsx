@@ -84,7 +84,7 @@ const newProblemTarget = {
     if (hoverClientY > hoverMiddleY) {
       return;
     }
-
+    debugger;
     props.addNewProblem(hoverIndex);
     // monitor.getItem().index = hoverIndex;
   },

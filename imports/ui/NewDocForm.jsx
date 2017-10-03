@@ -69,6 +69,7 @@ class NewDocForm extends React.Component {
 
 
   render() {
+    // debugger;
     return (
       <div>
         <h3>New Document Form</h3>
@@ -286,14 +287,14 @@ class NewDocForm extends React.Component {
         }
       ],
     };
-
-    this.setState(update(this.state, {
-      problems: {
-        $splice: [
-          [idx, 0, problem],
-        ],
-      },
-    }));
+    const problems = cloneDeep(this.state.problems);
+    problems.splice(idx, 0, problem);
+    this.setState( prevState => {
+      return {
+        problemCount: prevState.problemCount ++,
+        problems
+      };
+    });
   }
 
   addProblem(event) {
