@@ -56,6 +56,10 @@ Meteor.methods({
 
   'documents.update'(id, updatedDoc) {
     Documents.update(id, updatedDoc);
+  },
+
+  'documents.upsert'(id, updatedDoc) {
+    Documents.upsert(id, updatedDoc);
   }
 
 });
